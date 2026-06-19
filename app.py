@@ -53,7 +53,7 @@ st.set_page_config(
     page_title="Facilities Web Tools",
     page_icon="🛠️",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 logo_verde_b64 = _imagem_base64(LOGO_VERDE)
@@ -95,9 +95,32 @@ st.markdown(
         max-width: 1180px;
     }
 
+    /* Força tema claro/legível mesmo quando o Streamlit Cloud abre com tema escuro do navegador. */
+    .stApp, .main, .main .block-container, [data-testid="stAppViewContainer"] {
+        color: var(--rv-gray) !important;
+    }
+
+    h1, h2, h3, h4, h5, h6, p, span, label, div, small {
+        color: inherit;
+    }
+
+    [data-testid="stMarkdownContainer"],
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stCaptionContainer"],
+    [data-testid="stWidgetLabel"],
+    [data-testid="stFileUploader"] *,
+    [data-testid="stExpander"] *,
+    [data-testid="stDataFrame"] {
+        color: var(--rv-gray) !important;
+    }
+
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #FFFFFF 0%, #F4FAF8 100%);
-        border-right: 1px solid var(--rv-line);
+        display: none !important;
+    }
+
+    button[kind="header"],
+    [data-testid="collapsedControl"] {
+        display: none !important;
     }
 
     .rv-hero {
@@ -215,6 +238,17 @@ st.markdown(
         border-radius: 16px !important;
         background: #FFFFFF !important;
         box-shadow: 0 8px 20px rgba(0,105,84,0.06);
+        color: var(--rv-gray) !important;
+    }
+
+    div[role="radiogroup"] label * {
+        color: var(--rv-gray) !important;
+        opacity: 1 !important;
+    }
+
+    div[role="radiogroup"] [data-testid="stMarkdownContainer"] p {
+        color: var(--rv-gray) !important;
+        font-weight: 700 !important;
     }
 
     div[role="radiogroup"] label:hover {
@@ -239,7 +273,17 @@ st.markdown(
     [data-testid="stFileUploader"] section {
         border: 1.5px dashed rgba(0,120,96,0.35) !important;
         border-radius: 18px !important;
-        background: rgba(255,255,255,0.76) !important;
+        background: rgba(255,255,255,0.86) !important;
+    }
+
+    [data-testid="stFileUploader"] button {
+        color: #FFFFFF !important;
+        background: #0B0F19 !important;
+        border: none !important;
+    }
+
+    .stButton button:disabled {
+        opacity: .55 !important;
     }
 
     [data-testid="stMetric"] {
@@ -284,15 +328,15 @@ st.markdown(
 
 TIPOS = {
     "Biztrip / Toptur": {
-        "titulo": "Biztrip / Toptur - FT ou Fatura (.xlsx)",
+        "titulo": "Biztrip / Toptur - Fatura (.xlsx)",
         "extensoes": ["xlsx"],
-        "help": "Use para arquivos PLANILHA FT, FATURA ou planilhas exportadas da Biztrip/Toptur.",
+        "help": "Use para planilhas de fatura da Biztrip/Toptur.",
         "processor": biztrip.processar,
     },
     "Movida": {
         "titulo": "Movida - Medição com abas LOCAÇÃO e MULTAS (.xlsx)",
         "extensoes": ["xlsx"],
-        "help": "Use para medição da Movida. O app gera um rateio para LOCAÇÃO e outro para MULTAS quando existirem dados.",
+        "help": "Use para medição da Movida. O script gera um rateio para LOCAÇÃO e outro para MULTAS",
         "processor": movida.processar,
     },
     "Uber": {
@@ -302,17 +346,6 @@ TIPOS = {
         "processor": uber.processar,
     },
 }
-
-with st.sidebar:
-    if LOGO_CINZA.exists():
-        st.image(str(LOGO_CINZA), width=112)
-    st.markdown("### Facilities Web Tools")
-    st.caption("Rateio de custos para Facilities usando planilhas.")
-    st.divider()
-    st.markdown("**Ferramentas disponíveis**")
-    st.markdown("- Biztrip / Toptur\n- Movida\n- Uber")
-    st.divider()
-    st.caption("Versão 0.4 · Processamento temporário na sessão do app")
 
 st.markdown(
     """
@@ -349,17 +382,18 @@ with st.expander("Como usar", expanded=False):
         st.markdown(
             """
             1. Envie o CSV do Uber for Business.
-            2. O app localiza a tabela de transações dentro do CSV.
+            2. O script localiza a tabela de transações dentro do CSV.
             3. Usa **Código da despesa** como CC e **Valor da transação: BRL** como valor.
             4. Linhas sem CC, como **Payment**, ficam na aba BASE, mas não entram no RATEIO.
+            5. As datas são interpretadas no formato brasileiro (DD/MM/AAAA) para evitar confusão com o formato americano.
             """
         )
     else:
         st.markdown(
             """
-            1. Envie arquivos `.xlsx` de FT/Fatura da Biztrip/Toptur.
-            2. O app localiza cabeçalho, centro de custo, valor e número da fatura/FT.
-            3. Se uma planilha tiver várias FTs, o app filtra pelo número do arquivo quando possível.
+            1. Envie arquivos `.xlsx` de Fatura da Biztrip/Toptur.
+            2. O script localiza o cabeçalho, centro de custo, valor e número da fatura.
+            3. Se uma planilha tiver várias Fts, o app filtra pelo número do arquivo quando possível.
             """
         )
 
@@ -384,7 +418,7 @@ identificador_uber = None
 if tipo_escolhido == "Uber":
     identificador_uber = st.text_input(
         "Identificador manual para o nome do arquivo de saída (opcional)",
-        placeholder="Ex.: UBER_MAIO_2026. Se ficar vazio, uso o ID do nome do CSV.",
+        placeholder="Ex.: RATEIO_NÚMERO-DA-NOTA. Se ficar vazio, será utilizado o ID do nome do CSV.",
     ).strip() or None
 
 col_acao, col_limpar = st.columns([1, 1])
