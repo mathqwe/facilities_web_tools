@@ -542,7 +542,7 @@ else:
 st.markdown(
     """
     <div class="rv-footer">
-      Os arquivos são processados temporariamente na sessão do app. Não suba planilhas reais para o GitHub.
+      Os arquivos são processados temporariamente na sessão do app.
     </div>
     """,
     unsafe_allow_html=True,
