@@ -52,7 +52,8 @@ MAPA_DESCRICOES_CC = {
     "110614": "DAIICHI SANKYO",
     "110611": "HEINEKEN",
     "510101": "PRESIDÊNCIA",
-    "410102": "COMERCIAL CORPORATIVO"
+    "410102": "COMERCIAL CORPORATIVO",
+    "110623": "DAIICHI SANKYO - RETROFIT" #CC novo - Inserido dia 16/09/2026
 }
 
 # Quando o campo vem como texto em vez de número.
@@ -105,4 +106,8 @@ MAPA_CC_TEXTO = {
     "presidencia": "510101",
     "presidência": "510101",
     "comercial corporativo": "410102",
+    "daiichi sankyo retrofit": "110623"
+    "retrofit:" "110623",
+    "daiichi retrofit:": "110623",
+    "retrofit daiichii": "110623"
 }
